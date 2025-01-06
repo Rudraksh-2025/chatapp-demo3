@@ -6,11 +6,17 @@ import { RouterProvider } from 'react-router-dom';
 import App from './App.jsx'
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
+import theme from './theme';
+import { ThemeProvider } from '@mui/material/styles';
+import Chat from './Pages/Chat/Chat.jsx';
+
 
 createRoot(document.getElementById('root')).render(
 
   <StrictMode>
-    <RouterProvider router={router} />
-    <App />
+    <ThemeProvider theme={theme}>
+      <RouterProvider router={router} />
+      <App />
+    </ThemeProvider>
   </StrictMode>,
 )

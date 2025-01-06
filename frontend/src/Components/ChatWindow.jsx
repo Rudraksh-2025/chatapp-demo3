@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Box, Typography } from '@mui/material';
 
 const messages = [
@@ -8,28 +8,29 @@ const messages = [
     { text: 'I am fine and how are you?', sender: 'me', time: 'Today, 8:34pm' },
     { text: 'I am also fine', sender: 'other', time: 'Today, 8:37pm' },
     { text: 'where are you from?', sender: 'me', time: 'Today, 8:45pm' },
-
 ];
 
 const ChatWindow = () => {
+    const messagesEndRef = useRef(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView();
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, []);
     return (
         <Box
-            sx={{
-                flex: 1,
-                padding: 2,
-                overflowY: 'auto',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
-            }}
+            className='chat-window'
         >
             {messages.map((msg, index) => (
                 <Box
                     key={index}
                     sx={{
                         alignSelf: msg.sender === 'me' ? 'flex-end' : 'flex-start',
-                        backgroundColor: msg.sender === 'me' ? '#6B38FB' : '#2D2D2D',
-                        color: msg.sender === 'me' ? 'white' : 'white',
+                        backgroundColor: msg.sender === 'me' ? '#09563a' : '#2C3E50',
+                        color: msg.sender === 'me' ? 'var(--light-gray)' : 'var(--light-gray)',
                         borderRadius: '16px',
                         padding: '8px 16px',
                         maxWidth: '60%',
@@ -41,6 +42,7 @@ const ChatWindow = () => {
                     </Typography>
                 </Box>
             ))}
+            <div ref={messagesEndRef} />
         </Box>
     );
 };

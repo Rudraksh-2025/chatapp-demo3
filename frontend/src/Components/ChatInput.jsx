@@ -23,14 +23,9 @@ const ChatInput = () => {
     };
     return (
         <Box
-            sx={{
-                display: 'flex',
-                alignItems: 'center',
-                padding: '8px 16px',
-                borderTop: '1px solid #e0e0e0',
-            }}
+            className="chat-input-container"
         >
-            <IconButton onClick={() => setOpen(true)}>
+            <IconButton sx={{ color: 'var(--medium-gray)' }} onClick={() => setOpen(true)}>
                 <EmojiEmotionsIcon />
             </IconButton>
             <Modal
@@ -54,7 +49,7 @@ const ChatInput = () => {
                         overflowY: 'auto',
                     }}
                 >
-                    <Grid container spacing={1}>
+                    <Grid container>
                         {emoji.map((emoji, index) => (
                             <Grid
                                 item
@@ -75,7 +70,7 @@ const ChatInput = () => {
                 </Box>
             </Modal>
             <IconButton component="label">
-                <AttachFileIcon />
+                <AttachFileIcon sx={{ color: 'var(--medium-gray)' }} />
                 <input
                     type="file"
                     hidden
@@ -87,13 +82,33 @@ const ChatInput = () => {
                 fullWidth
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                color="primary"
                 size='small'
+                autoComplete='off'
+                className='text-field-input'
                 placeholder="Type your message here..."
-                sx={{ marginX: 2, bgcolor: 'white' }}
+                sx={{
+                    marginX: 2,
+                    bgcolor: '#2A3942',
+                    '& .MuiOutlinedInput-root': {
+                        color: 'white',
+                        '& fieldset': {
+                            border: 'none',
+                        },
+                        '&:hover fieldset': {
+                            border: 'none',
+                        },
+                        '&.Mui-focused fieldset': {
+                            border: 'none',
+                        },
+                    },
+                    '& .MuiOutlinedInput-input::placeholder': {
+                        color: '#D3D3D3',
+                        opacity: 1,
+                    },
+                }}
             />
             <IconButton>
-                <SendIcon sx={{ color: '#6E00FF' }} />
+                <SendIcon sx={{ color: 'var(--medium-gray)' }} />
             </IconButton>
         </Box>
     );

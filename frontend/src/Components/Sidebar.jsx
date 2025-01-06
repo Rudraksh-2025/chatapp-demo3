@@ -12,7 +12,7 @@ const Sidebar = () => {
             sx={{
                 width: { xs: "100vw", md: '100%' },
                 height: { xs: "10%", md: '100vh' },
-                backgroundColor: '#6B38FB',
+                backgroundColor: '#1F2C33',
                 display: 'flex',
                 flexDirection: { xs: "row", md: 'column' },
                 alignItems: 'center',
@@ -22,25 +22,25 @@ const Sidebar = () => {
         >
             <IconButton>
                 <img
-                    src="https://plus.unsplash.com/premium_photo-1689565611422-b2156cc65e47?q=80&w=2370&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    src="https://via.placeholder.com/50"
                     alt="profile"
                     style={{
                         width: '40px',
                         height: '40px',
                         borderRadius: '50%',
-                        border: '2px solid white',
+                        border: '2px solid #A9A9A9',
                     }}
                 />
             </IconButton>
             <IconButton>
-                <HomeIcon style={{ color: 'white' }} />
+                <HomeIcon style={{ color: '#A9A9A9' }} />
             </IconButton>
             <IconButton>
-                <ChatIcon style={{ color: 'white' }} />
+                <ChatIcon style={{ color: '#A9A9A9' }} />
             </IconButton>
             <Box sx={{ flexGrow: 1 }} />
             <IconButton>
-                <LogoutIcon onClick={logout} style={{ color: 'white' }} />
+                <LogoutIcon onClick={logout} style={{ color: '#A9A9A9' }} />
             </IconButton>
         </Box>
     );

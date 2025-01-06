@@ -5,8 +5,9 @@ import Autocomplete from '@mui/material/Autocomplete';
 
 const Search = () => {
     return (
-        <Box sx={{ m: 2 }}>
+        <Box sx={{ m: 2, }}>
             <Autocomplete
+
                 freeSolo
                 id="free-solo-2-demo"
 
@@ -15,12 +16,33 @@ const Search = () => {
                 renderInput={(params) => (
                     <TextField
                         {...params}
-                        label="Search User"
+                        placeholder="Search User"
                         color='primary'
+                        size='medium'
                         slotProps={{
                             input: {
                                 ...params.InputProps,
                                 type: 'search',
+                            },
+                        }}
+                        sx={{
+                            borderRadius: '10px',
+                            bgcolor: '#2A3942',
+                            '& .MuiOutlinedInput-root': {
+                                color: 'white',
+                                '& fieldset': {
+                                    border: 'none',
+                                },
+                                '&:hover fieldset': {
+                                    border: 'none',
+                                },
+                                '&.Mui-focused fieldset': {
+                                    border: 'none',
+                                },
+                            },
+                            '& .MuiOutlinedInput-input::placeholder': {
+                                color: 'grey',
+                                opacity: 1,
                             },
                         }}
                     />
