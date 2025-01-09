@@ -5,11 +5,14 @@ import AttachFileIcon from '@mui/icons-material/AttachFile';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import SendIcon from '@mui/icons-material/Send';
 import { emoji } from '../utils/Emoji'
+import { useChatStore } from '../store/useChatStore';
 
-const ChatInput = () => {
+const ChatInput = ({ dialogId }) => {
+    const { recipient_id, createMsg } = useChatStore();
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
-    const [file, setFile] = useState(null)
+    const [file, setFile] = useState(null);
+
     const handleEmojiClick = (emoji) => {
         setMessage((prev) => prev + emoji);
         setOpen(false);
@@ -19,6 +22,18 @@ const ChatInput = () => {
         if (selectedFile) {
             setFile(selectedFile);
             console.log('File selected:', selectedFile.name);
+        }
+    };
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
+        }
+    };
+    const handleSend = async () => {
+        if (message.trim() && dialogId) {
+            await createMsg({ chat_dialog_id: dialogId, message: message.trim(), recipient_id: recipient_id });
+            setMessage('');
         }
     };
     return (
@@ -81,6 +96,7 @@ const ChatInput = () => {
                 variant="outlined"
                 fullWidth
                 value={message}
+                onKeyPress={handleKeyPress}
                 onChange={(e) => setMessage(e.target.value)}
                 size='small'
                 autoComplete='off'
@@ -107,7 +123,7 @@ const ChatInput = () => {
                     },
                 }}
             />
-            <IconButton>
+            <IconButton onClick={handleSend}>
                 <SendIcon sx={{ color: 'var(--medium-gray)' }} />
             </IconButton>
         </Box>

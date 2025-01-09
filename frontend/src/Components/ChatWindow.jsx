@@ -1,17 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 import { Box, Typography } from '@mui/material';
+import { useParams } from 'react-router-dom';
 
-const messages = [
-    { text: 'Hey There!', sender: 'other', time: 'Today, 8:30pm' },
-    { text: 'How are you?', sender: 'other', time: 'Today, 8:30pm' },
-    { text: 'Hello!', sender: 'me', time: 'Today, 8:33pm' },
-    { text: 'I am fine and how are you?', sender: 'me', time: 'Today, 8:34pm' },
-    { text: 'I am also fine', sender: 'other', time: 'Today, 8:37pm' },
-    { text: 'where are you from?', sender: 'me', time: 'Today, 8:45pm' },
-];
+import { useAuthStore } from '../store/useAuthStore';
 
-const ChatWindow = () => {
+const ChatWindow = ({ messages = [] }) => {
+    const { chat_dialog_id } = useParams();
     const messagesEndRef = useRef(null);
+    const { authUser } = useAuthStore();
+    const currentUserId = authUser?.session?.user_id;
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView();
@@ -19,29 +16,34 @@ const ChatWindow = () => {
 
     useEffect(() => {
         scrollToBottom();
-    }, []);
+    }, [messages]);
     return (
-        <Box
-            className='chat-window'
-        >
-            {messages.map((msg, index) => (
-                <Box
-                    key={index}
-                    sx={{
-                        alignSelf: msg.sender === 'me' ? 'flex-end' : 'flex-start',
-                        backgroundColor: msg.sender === 'me' ? '#09563a' : '#2C3E50',
-                        color: msg.sender === 'me' ? 'var(--light-gray)' : 'var(--light-gray)',
-                        borderRadius: '16px',
-                        padding: '8px 16px',
-                        maxWidth: '60%',
-                    }}
-                >
-                    <Typography variant="body1">{msg.text}</Typography>
-                    <Typography variant="caption" sx={{ display: 'block', marginTop: '4px', textAlign: 'right' }}>
-                        {msg.time}
-                    </Typography>
-                </Box>
-            ))}
+        <Box className="chat-window">
+            {messages.map((msg, index) => {
+                const isSender = msg.sender_id === currentUserId;
+                return (
+                    <Box
+                        key={msg._id || index}
+                        sx={{
+                            alignSelf: isSender ? 'flex-end' : 'flex-start',
+                            backgroundColor: isSender ? '#09563a' : '#2C3E50',
+                            color: 'white',
+                            borderRadius: '16px',
+                            padding: '8px 16px',
+                            maxWidth: '60%',
+                            marginBottom: '8px',
+                        }}
+                    >
+                        <Typography variant="body1">{msg.message}{isSender}</Typography>
+                        <Typography
+                            variant="caption"
+                            sx={{ display: 'block', marginTop: '4px', textAlign: isSender ? 'right' : 'left' }}
+                        >
+                            {new Date(msg.date_sent * 1000).toLocaleTimeString()}
+                        </Typography>
+                    </Box>
+                );
+            })}
             <div ref={messagesEndRef} />
         </Box>
     );

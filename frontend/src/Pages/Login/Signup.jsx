@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { useAuthStore } from '../../store/useAuthStore';
 import LockIcon from '@mui/icons-material/Lock';
-import consultation2 from '../../assets/consultation2.gif';
+import consult from '../../assets/consult.gif';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Signup = () => {
@@ -29,9 +29,23 @@ const Signup = () => {
             email: email,
             password: password,
             full_name: fullName,
+            blob_id: file,
             age_over16: age > 16
         };
         await signup(user);
+    };
+
+
+    const handleImageUpload = async (e) => {
+        const selectedFile = e.target.files[0];
+        if (!selectedFile) return;
+
+        try {
+            const blobId = await useAuthStore.getState().uploadFile(selectedFile);
+            setFile(blobId);
+        } catch (err) {
+            console.error('Error uploading file:', err);
+        }
     };
 
     return (
@@ -54,7 +68,7 @@ const Signup = () => {
                         <div className="box-content">
                             <div className="header">
                                 <div className="header">
-                                    <img src={consultation2} className="header-icon" />
+                                    <img src={consult} className="header-icon" />
                                     <Typography variant="h4" color="initial">
                                         Signup
                                     </Typography>
@@ -128,12 +142,11 @@ const Signup = () => {
 
                                 />
                                 <TextField
-
-                                    onChange={(e) => setFile(e.target.files[0])}
                                     type="file"
                                     fullWidth
                                     margin="dense"
                                     color="success"
+                                    onChange={handleImageUpload}
                                     id="user_image"
                                 />
                                 <div className='btn-container'>
@@ -154,8 +167,8 @@ const Signup = () => {
                                 </div>
 
                                 <Box sx={{ mt: 1, textAlign: 'center' }}>
-                                    <Typography variant="body1" color="gray">Already have an account ?
-                                        <Link to='/login' underline="always"> Click here</Link></Typography>
+                                    {/* <Typography variant="body1" color="gray">Already have an account ?
+                                        <Link to='/login' underline="always"> Click here</Link></Typography> */}
                                 </Box>
 
                             </div>

@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 import LockIcon from '@mui/icons-material/Lock';
-import consultation2 from '../../assets/consultation2.gif';
+import consult from '../../assets/consult.gif';
 import { Link } from 'react-router-dom'
 
 const Login = () => {
@@ -43,7 +43,7 @@ const Login = () => {
                     >
                         <div className="box-content">
                             <div className="header">
-                                <img src={consultation2} className="header-icon" />
+                                <img src={consult} className="header-icon" />
                                 <Typography variant="h4" color="initial">
                                     Login
                                 </Typography>

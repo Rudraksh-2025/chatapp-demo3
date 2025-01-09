@@ -11,6 +11,7 @@ export const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
             { path: '/', element: <Chat /> },
+            { path: '/chat/:dialogId', element: <Chat /> },
         ],
     },
     {

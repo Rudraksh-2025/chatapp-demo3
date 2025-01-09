@@ -6,7 +6,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuthStore } from '../store/useAuthStore';
 
 const Sidebar = () => {
-    const { logout, authUser } = useAuthStore()
+    const { logout } = useAuthStore()
     return (
         <Box
             sx={{
@@ -39,8 +39,8 @@ const Sidebar = () => {
                 <ChatIcon style={{ color: '#A9A9A9' }} />
             </IconButton>
             <Box sx={{ flexGrow: 1 }} />
-            <IconButton>
-                <LogoutIcon onClick={logout} style={{ color: '#A9A9A9' }} />
+            <IconButton onClick={logout}>
+                <LogoutIcon style={{ color: '#A9A9A9' }} />
             </IconButton>
         </Box>
     );

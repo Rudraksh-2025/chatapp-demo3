@@ -11,7 +11,7 @@ export const useAuthStore = create((set, get) => ({
     isCheckingAuth: true,
     isCreatingSession: true,
     appToken: null,
-    userToken: null,
+    userToken: localStorage.getItem('userToken'),
 
     createSession: async () => {
         const applicationId = '105125';
@@ -79,20 +79,20 @@ export const useAuthStore = create((set, get) => ({
     signup: async (data) => {
         set({ isSigningUp: true });
         try {
-            // Step 1: Create user with app token
-            const appToken = get().appToken;
+            //user with api key
+            const apiKey = 'I56Jo7P7v9RZB5rLqG9wlIlAIrXSFqaT38fuCQAr5fg';
             const signupResponse = await axios.post('https://api.quickblox.com/users.json',
                 { user: data },
                 {
                     headers: {
                         accept: 'application/json',
-                        'QB-Token': appToken,
-                        'content-type': 'application/json'
+                        'content-type': 'application/json',
+                        Authorization: `ApiKey ${apiKey}`
                     }
                 }
             );
 
-            // Step 2: Create user session token
+            //user session token
             const userId = signupResponse.data.user.id;
             const userSessionResponse = await axios.post(
                 `https://api.quickblox.com/users/${userId}/tokens`,
@@ -100,18 +100,16 @@ export const useAuthStore = create((set, get) => ({
                 {
                     headers: {
                         accept: 'application/json',
-                        Authorization: `Bearer ${appToken}`
+                        Authorization: `ApiKey ${apiKey}`
                     }
                 }
             );
-
-            // Store both user data and the new session token
+            localStorage.setItem('userToken', userSessionResponse.data.token)
             set({
                 authUser: signupResponse.data,
                 userToken: userSessionResponse.data.token
             });
             toast.success('Account created successfully');
-            // After successful signup, the AuthLayout will automatically redirect to /chat
         } catch (err) {
             toast.error(err.response?.data?.message || 'Signup failed');
             console.error("Signup error:", err);
@@ -128,6 +126,7 @@ export const useAuthStore = create((set, get) => ({
                     'QB-Token': userToken
                 }
             });
+            localStorage.removeItem('userToken')
             set({ authUser: null, userToken: null });
             toast.success('Logged out successfully');
         } catch (error) {
@@ -148,8 +147,7 @@ export const useAuthStore = create((set, get) => ({
                     }
                 }
             );
-
-            // Step 2: Create user session token
+            //user session token
             const userId = loginResponse.data.user.id;
             const apiKey = 'I56Jo7P7v9RZB5rLqG9wlIlAIrXSFqaT38fuCQAr5fg';
             const userSessionResponse = await axios.post(
@@ -162,8 +160,8 @@ export const useAuthStore = create((set, get) => ({
                     }
                 }
             );
-
-            // Store both user data and the new session token
+            localStorage.setItem('authUser', JSON.stringify(loginResponse.data));
+            localStorage.setItem('userToken', userSessionResponse.data.token);
             set({
                 authUser: loginResponse.data,
                 userToken: userSessionResponse.data.token
@@ -175,6 +173,28 @@ export const useAuthStore = create((set, get) => ({
         } finally {
             set({ isLoggingIn: false });
         }
-    }
+    },
+    uploadFile: async (file) => {
+        try {
+            const apiKey = 'I56Jo7P7v9RZB5rLqG9wlIlAIrXSFqaT38fuCQAr5fg';
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await axios.post('https://api.quickblox.com/blobs.json', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `ApiKey ${apiKey}`,
+                },
+            });
+
+            // File successfully uploaded; return blob_id
+            const blobId = response.data.blob.id;
+            return blobId;
+        } catch (err) {
+            console.error('File upload failed:', err);
+            throw new Error(err.response?.data?.message || 'File upload failed');
+        }
+    },
+
 
 }))

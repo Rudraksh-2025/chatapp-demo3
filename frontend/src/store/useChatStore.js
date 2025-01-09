@@ -2,98 +2,115 @@ import { create } from 'zustand'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useAuthStore } from './useAuthStore'
+// import { useUserStore } from './useUserStore'
 export const useChatStore = create((set, get) => ({
-    user: null,
-    users: [],
-    isUpdating: false,
-    isDeleting: false,
-    isFetching: false,
+    apikey: '3nnWkLLQuX77lwk4nn-xahc6vFOirrt-Kqblu45ttsE',
+    CurrentDialogId: null,
+    dialogs: [],
+    msg: [],
+    recipient_id: null,
 
-    getUsers: async () => {
-        set({ isFetching: true })
-        try {
-            const { userToken } = useAuthStore.getState()
-            const response = await axios.get('https://api.quickblox.com/users.json?page=1&per_page=10', {
-                headers: {
-                    'QB-Token': userToken
-                }
-            })
-            set({ users: response.data.items, isFetching: false })
-        } catch (error) {
-            toast.error("error in fetching users")
-            console.log(error)
+    createDialog: async (data) => {
+        const { authUser } = useAuthStore.getState();
+        const apikey = get().apikey;
+        const payload = {
+            occupants_ids: data.checked,
+            type: data.type,
+        };
+        if (data.type === 2) {
+            payload.name = data.name;
         }
-        finally {
-            set({ isFetching: false })
-        }
-    },
-    getUser: async (userId) => {
-        set({ isFetching: true })
-        try {
-            const { userToken } = useAuthStore.getState()
-            const response = await axios.get(`https://api.quickblox.com/users/${userId}.json`, {
-                headers: {
-                    'QB-Token': userToken
-                }
-            })
-            set({ user: response.data, isFetching: false })
-        } catch (error) {
-            toast.error("error in fetching user")
-            console.log(error)
-        }
-        finally {
-            set({ isFetching: false })
-        }
-    },
-    updateUser: async (userId, userData) => {
-        set({ isUpdating: true })
-        try {
-            const { userToken } = useAuthStore.getState()
-            const response = await axios.put(
-                `https://api.quickblox.com/users/${userId}.json`,
-                { user: userData },
-                {
-                    headers: {
-                        'QB-Token': userToken,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            )
-            set({ user: response.data, isUpdating: false })
-            toast.success('User updated successfully')
-        } catch (error) {
-            toast.error(error.response?.data?.message || 'Error updating user')
-            console.error('Update user error:', error)
-        } finally {
-            set({ isUpdating: false })
-        }
-    },
-    deleteUser: async (userId) => {
-        set({ isDeleting: true })
-        try {
-            const { userToken } = useAuthStore.getState()
-            await axios.delete(
-                `https://api.quickblox.com/users/${userId}.json`,
-                {
-                    headers: {
-                        'QB-Token': userToken
-                    }
-                }
-            )
-            const currentUsers = get().users
-            set({
-                users: currentUsers.filter(user => user.id !== userId),
-                user: get().user?.id === userId ? null : get().user
-            })
 
-            toast.success('User deleted successfully')
-            return true
+        try {
+            const response = await axios.post('https://api.quickblox.com/chat/Dialog.json', payload, {
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                    Authorization: `ApiKey ${apikey}`,
+                    'On-Behalf-Of': authUser.id,
+                },
+            });
+            await get().getDialogs();
+            set({ CurrentDialogId: response.data._id });
+            toast('Dialog successfully created');
         } catch (error) {
-            toast.error(error.response?.data?.message || 'Error deleting user')
-            console.error('Delete user error:', error)
-            return false
-        } finally {
-            set({ isDeleting: false })
+            toast.error('Error in creating dialog');
+            console.error(error);
+        }
+    },
+    getDialogs: async () => {
+        const { authUser } = useAuthStore.getState()
+        const apikey = get().apikey
+        try {
+            const response = await axios.get('https://api.quickblox.com/chat/Dialog.json?include_unread_message_count=1&limit=100&skip=0', {
+                headers: {
+                    Authorization: `ApiKey ${apikey}`,
+                    'On-Behalf-Of': authUser.id
+                }
+            })
+            set({ dialogs: response.data.items })
+
+        } catch (error) {
+            toast('error in fetching dialogs')
+            console.log("errors")
+        }
+    },
+    deleteDialog: async (chat_dialog_id) => {
+        const { authUser } = useAuthStore.getState()
+        const apikey = get().apikey
+        try {
+            console.log(chat_dialog_id)
+            await axios.delete(`https://api.quickblox.com/chat/Dialog/${chat_dialog_id},${chat_dialog_id}`, {
+                headers: {
+                    Authorization: `ApiKey ${apikey}`,
+                    'On-Behalf-Of': authUser.id
+                }
+            })
+            await get().getDialogs()
+            console.log('deleted successfully')
+        } catch (error) {
+            toast('error in deleting dialog')
+        }
+    },
+    createMsg: async (data) => {
+        const { authUser } = useAuthStore.getState();
+        const apikey = get().apikey;
+        try {
+            await axios.post('https://api.quickblox.com/chat/Message.json', {
+                "chat_dialog_id": data.chat_dialog_id,
+                "message": data.message,
+                "recipient_id": data.recipient_id,
+                "send_to_chat": 1
+            }, {
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                    Authorization: `ApiKey ${apikey}`,
+                    'On-Behalf-Of': authUser.id,
+                }
+            })
+            await get().getMsg();
+            toast('msg created successfully')
+        } catch (error) {
+            toast('error in creating message')
+        }
+    },
+    getMsg: async (chat_dialog_id) => {
+        const { authUser } = useAuthStore.getState();
+        const apikey = get().apikey;
+        try {
+            const response = await axios.get(`https://api.quickblox.com/chat/Message.json?limit=100&skip=0&chat_dialog_id=${chat_dialog_id}`, {
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                    Authorization: `ApiKey ${apikey}`,
+                    'On-Behalf-Of': authUser.id,
+                }
+            })
+            set({ msg: response.data.items, recipient_id: response.data.items[0].recipient_id })
+        } catch (error) {
+            toast('error in getting messages')
+            set({ msg: [] })
         }
     }
 }))

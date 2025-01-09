@@ -30,10 +30,28 @@ body {
   padding: 8px 16px;
 }
 
-.chatList-container {
+/* .chatList-container {
   background-color: pink;
   padding-left: 20px;
+} */
+
+
+
+.modal-style {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  max-height: 80vh;
+  background-color: #1f2c33;
+  color: var(--light-gray);
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  border-radius: 8px;
+  overflow-y:auto;
 }
+
 .chat-bg {
   background-image: url("../../assets/chatBg3.jpeg");
   background-size: contain;
@@ -58,4 +76,8 @@ body {
   justify-content: space-between;
   padding: 10px;
   /* color: white; */
+}
+
+.haalo{
+  
 }

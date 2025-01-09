@@ -1,25 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Box, Container } from '@mui/material';
 import Sidebar from '../../Components/Sidebar';
 import { PeopleList } from '../../Components/PeopleList';
 import ChatHeader from '../../Components/ChatHeader';
 import ChatWindow from '../../Components/ChatWindow';
 import ChatInput from '../../Components/ChatInput';
-import Search from '../../Components/Search';
 import Grid from '@mui/material/Grid2';
-import './chat.css'
+import { useChatStore } from '../../store/useChatStore';
+import Search from '../../Components/Search'
+import './chat.css';
 
 const Chat = () => {
+    const { dialogId } = useParams();
+    const { getMsg, msg } = useChatStore();
+    const [messages, setMessages] = useState([]);
+
+    console.log(messages)
+    useEffect(() => {
+        if (dialogId) {
+            const fetchMessages = async () => {
+                await getMsg(dialogId);
+                setMessages(msg);
+            };
+            fetchMessages();
+        }
+    }, [dialogId, getMsg]);
+
     return (
         <Container className='chat-container' maxWidth='xxl' disableGutters>
             <Box className='chat-Box'>
-                <Grid container >
-
-                    <Grid sx={{ height: '100vh' }} item size='auto'>
+                <Grid container>
+                    <Grid xs='auto' sx={{ height: '100vh' }} item>
                         <Sidebar />
                     </Grid>
-                    <Grid size={4} container direction="column" sx={{ height: '100vh', bgcolor: '#111B21', color: 'white' }}>
-                        <Grid item >
+                    <Grid size={4} item container direction="column" sx={{ height: '100vh', bgcolor: '#111B21', color: 'white' }}>
+                        <Grid item>
                             <Search />
                         </Grid>
                         <Grid item sx={{
@@ -29,20 +45,15 @@ const Chat = () => {
                             <PeopleList />
                         </Grid>
                     </Grid>
-
-
-                    <Grid container direction="column" flexGrow={1} sx={{ height: '100vh' }}>
-                        <Grid item >
-                            <ChatHeader />
+                    <Grid item container direction="column" flexGrow={1} sx={{ height: '100vh' }}>
+                        <Grid item>
+                            <ChatHeader dialogId={dialogId} />
                         </Grid>
-                        <Grid className='chat-bg' item sx={{
-                            flex: 1,
-                            overflowY: 'auto',
-                        }}>
-                            <ChatWindow />
+                        <Grid item className='chat-bg' sx={{ flex: 1, overflowY: 'auto' }}>
+                            <ChatWindow messages={messages} />
                         </Grid>
-                        <Grid item >
-                            <ChatInput />
+                        <Grid item>
+                            <ChatInput dialogId={dialogId} />
                         </Grid>
                     </Grid>
                 </Grid>

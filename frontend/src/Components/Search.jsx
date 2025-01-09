@@ -1,18 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Container, Box } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import { useUserStore } from '../store/useUserStore';
 
 const Search = () => {
+    const { users, getUsers } = useUserStore()
+    useEffect(() => {
+        getUsers()
+    }, [getUsers])
     return (
         <Box sx={{ m: 2, }}>
             <Autocomplete
-
                 freeSolo
                 id="free-solo-2-demo"
 
                 disableClearable
-                options={top100Films.map((option) => option.title)}
+                options={users?.map((option) => option.user.login)}
                 renderInput={(params) => (
                     <TextField
                         {...params}

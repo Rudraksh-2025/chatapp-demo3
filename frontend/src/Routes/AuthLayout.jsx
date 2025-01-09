@@ -3,7 +3,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { Outlet, Navigate } from 'react-router-dom';
 
 const AuthLayout = () => {
-    const { authUser, createSession, appToken } = useAuthStore();
+    const { createSession, appToken, userToken } = useAuthStore();
 
     useEffect(() => {
         if (!appToken) {
@@ -11,7 +11,7 @@ const AuthLayout = () => {
         }
     }, []);
 
-    if (authUser) {
+    if (userToken) {
         return <Navigate to="/" />;
     }
 

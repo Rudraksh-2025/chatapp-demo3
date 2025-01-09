@@ -13,10 +13,10 @@ import Chat from './Pages/Chat/Chat.jsx';
 
 createRoot(document.getElementById('root')).render(
 
-  <StrictMode>
-    <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
-      <App />
-    </ThemeProvider>
-  </StrictMode>,
+  // <StrictMode>
+  <ThemeProvider theme={theme}>
+    <RouterProvider router={router} />
+    <App />
+  </ThemeProvider>,
+  {/* </StrictMode>, */ }
 )
