@@ -8,7 +8,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 import theme from './theme';
 import { ThemeProvider } from '@mui/material/styles';
-import Chat from './Pages/Chat/Chat.jsx';
 
 
 createRoot(document.getElementById('root')).render(

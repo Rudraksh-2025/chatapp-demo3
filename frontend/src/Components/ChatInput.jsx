@@ -8,11 +8,10 @@ import { emoji } from '../utils/Emoji'
 import { useChatStore } from '../store/useChatStore';
 
 const ChatInput = ({ dialogId }) => {
-    const { recipient_id, createMsg } = useChatStore();
+    const { recipient_id, isSendingMsg, createMsg } = useChatStore();
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [file, setFile] = useState(null);
-
     const handleEmojiClick = (emoji) => {
         setMessage((prev) => prev + emoji);
         setOpen(false);
@@ -96,14 +95,17 @@ const ChatInput = ({ dialogId }) => {
                 variant="outlined"
                 fullWidth
                 value={message}
+                disabled={isSendingMsg}
                 onKeyPress={handleKeyPress}
                 onChange={(e) => setMessage(e.target.value)}
+
                 size='small'
                 autoComplete='off'
                 className='text-field-input'
                 placeholder="Type your message here..."
                 sx={{
                     marginX: 2,
+                    color: isSendingMsg ? '#B0B0B0' : 'var(--medium-gray)',
                     bgcolor: '#2A3942',
                     '& .MuiOutlinedInput-root': {
                         color: 'white',
@@ -123,8 +125,8 @@ const ChatInput = ({ dialogId }) => {
                     },
                 }}
             />
-            <IconButton onClick={handleSend}>
-                <SendIcon sx={{ color: 'var(--medium-gray)' }} />
+            <IconButton onClick={handleSend} disabled={isSendingMsg || !message.trim()}>
+                <SendIcon sx={{ color: isSendingMsg ? '#B0B0B0' : 'var(--medium-gray)' }} />
             </IconButton>
         </Box>
     );

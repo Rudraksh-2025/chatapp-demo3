@@ -11,19 +11,30 @@ import MoreOption from './MoreOption';
 import { useChatStore } from '../store/useChatStore';
 import { FormatTimeStamp } from '../utils/FormatTimeStamp';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/useAuthStore';
 
 export const PeopleList = () => {
     const [selectedIndex, setSelectedIndex] = useState(null);
     const { dialogs, getDialogs } = useChatStore();
+    const { authUser, isCheckingAuth } = useAuthStore();
     const navigate = useNavigate();
 
     useEffect(() => {
-        getDialogs();
-    }, [getDialogs]);
+        if (authUser) {
+            getDialogs();
+        }
+        const intervalId = setInterval(() => {
+            getDialogs();
+        }, 2000);
+        return () => clearInterval(intervalId);
+    }, [authUser, getDialogs]);
+    if (isCheckingAuth) {
+        return <Typography>Loading...</Typography>;
+    }
 
-    const handleDialogClick = (dialogId, index) => {
+    const handleDialogClick = (dialog, index) => {
         setSelectedIndex(index);
-        navigate(`/chat/${dialogId}`);
+        navigate(`/chat/${dialog._id}`);
     };
 
     return (
@@ -40,7 +51,7 @@ export const PeopleList = () => {
                     <ListItem
                         key={index}
                         className="people-list"
-                        onClick={() => handleDialogClick(dialog._id, index)}
+                        onClick={() => handleDialogClick(dialog, index)}
                         sx={{
                             px: 2,
                             py: '3px',
@@ -66,7 +77,9 @@ export const PeopleList = () => {
                                         color: 'var(--medium-gray)',
                                     }}
                                 >
-                                    <span>{dialog.last_message}</span>
+                                    <span>{dialog.last_message && dialog.last_message.length > 20
+                                        ? dialog.last_message.slice(0, 20) + '...'
+                                        : dialog.last_message || ''}</span>
                                     <Typography
                                         variant="caption"
                                         component="span"

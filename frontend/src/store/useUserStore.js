@@ -8,12 +8,14 @@ export const useUserStore = create((set, get) => ({
     isUpdating: false,
     isDeleting: false,
     isFetching: false,
+    selectedUser: null,
+    username: null,
 
     getUsers: async () => {
         set({ isFetching: true })
         try {
             const { userToken } = useAuthStore.getState()
-            const response = await axios.get('https://api.quickblox.com/users.json?page=1&per_page=10', {
+            const response = await axios.get('/api/users.json?page=1&per_page=10', {
                 headers: {
                     'QB-Token': userToken
                 }
@@ -31,7 +33,7 @@ export const useUserStore = create((set, get) => ({
         set({ isFetching: true })
         try {
             const { userToken } = useAuthStore.getState()
-            const response = await axios.get(`https://api.quickblox.com/users/${userId}.json`, {
+            const response = await axios.get(`/api/users/${userId}.json`, {
                 headers: {
                     'QB-Token': userToken
                 }
@@ -50,7 +52,7 @@ export const useUserStore = create((set, get) => ({
         try {
             const { userToken } = useAuthStore.getState()
             const response = await axios.put(
-                `https://api.quickblox.com/users/${userId}.json`,
+                `/api/users/${userId}.json`,
                 { user: userData },
                 {
                     headers: {
@@ -73,7 +75,7 @@ export const useUserStore = create((set, get) => ({
         try {
             const { userToken } = useAuthStore.getState()
             await axios.delete(
-                `https://api.quickblox.com/users/${userId}.json`,
+                `/api/users/${userId}.json`,
                 {
                     headers: {
                         'QB-Token': userToken
@@ -95,5 +97,21 @@ export const useUserStore = create((set, get) => ({
         } finally {
             set({ isDeleting: false })
         }
+    },
+    getUserName: async (userId) => {
+        try {
+            const { userToken } = useAuthStore.getState();
+            const response = await axios.get(`/api/users/${userId}.json`, {
+                headers: {
+                    'QB-Token': userToken,
+                },
+            });
+            const user = response.data.user;
+            return user.login || 'Unknown User';
+        } catch (error) {
+            console.error('Error fetching user name:', error);
+            return 'Error Fetching Name';
+        }
     }
+
 }))

@@ -1,29 +1,56 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography } from '@mui/material';
-import { useParams } from 'react-router-dom';
-
+import { useChatStore } from '../store/useChatStore';
 import { useAuthStore } from '../store/useAuthStore';
+import { useUserStore } from '../store/useUserStore';
 
-const ChatWindow = ({ messages = [] }) => {
-    const { chat_dialog_id } = useParams();
-    const messagesEndRef = useRef(null);
+const ChatWindow = ({ dialogId }) => {
+    // const [usernames, setUsernames] = useState({});
+    const { getMsg, msg } = useChatStore();
     const { authUser } = useAuthStore();
     const currentUserId = authUser?.session?.user_id;
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView();
-    };
+    // const { getUserName } = useUserStore()
 
     useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+        if (!dialogId) return;
+        getMsg(dialogId);
+        const intervalId = setInterval(() => {
+            getMsg(dialogId);
+        }, 1000);
+        return () => clearInterval(intervalId);
+    }, [dialogId, getMsg]);
+
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [msg]);
+
+    // useEffect(() => {
+    //     const fetchUsernames = async () => {
+    //         const newUsernames = { ...usernames };
+    //         for (const message of msg) {
+    //             if (!newUsernames[message.sender_id]) {
+    //                 newUsernames[message.sender_id] =
+    //                     message.sender_id === currentUserId
+    //                         ? 'You'
+    //                         : await getUserName(message.sender_id);
+    //             }
+    //         }
+    //         setUsernames(newUsernames);
+    //     };
+
+    //     fetchUsernames();
+    // }, [currentUserId, getUserName, usernames]);
+
     return (
         <Box className="chat-window">
-            {messages.map((msg, index) => {
-                const isSender = msg.sender_id === currentUserId;
+            {msg.map((message, index) => {
+                const isSender = message.sender_id === currentUserId;
+                // const username = usernames[message.sender_id] || 'Loading...';
                 return (
                     <Box
-                        key={msg._id || index}
+                        key={message._id || index}
                         sx={{
                             alignSelf: isSender ? 'flex-end' : 'flex-start',
                             backgroundColor: isSender ? '#09563a' : '#2C3E50',
@@ -34,12 +61,15 @@ const ChatWindow = ({ messages = [] }) => {
                             marginBottom: '8px',
                         }}
                     >
-                        <Typography variant="body1">{msg.message}{isSender}</Typography>
+                        {/* <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                            {username}
+                        </Typography> */}
+                        <Typography variant="body1">{message.message}</Typography>
                         <Typography
                             variant="caption"
                             sx={{ display: 'block', marginTop: '4px', textAlign: isSender ? 'right' : 'left' }}
                         >
-                            {new Date(msg.date_sent * 1000).toLocaleTimeString()}
+                            {new Date(message.date_sent * 1000).toLocaleTimeString()}
                         </Typography>
                     </Box>
                 );

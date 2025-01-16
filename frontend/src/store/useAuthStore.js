@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import axios from 'axios'
 import { toast } from 'react-toastify';
 import { generateSignature } from '../utils/GenerateSignature';
+import { useChatStore } from './useChatStore';
 
 export const useAuthStore = create((set, get) => ({
     authUser: null,
@@ -14,11 +15,13 @@ export const useAuthStore = create((set, get) => ({
     userToken: localStorage.getItem('userToken'),
 
     createSession: async () => {
-        const applicationId = '105125';
-        const authKey = 'ak_gajNCMCpyCAUfht';
-        const authSecret = 'as_9GqUetSXSUGgQZk';
+
+        const applicationId = import.meta.env.VITE_QB_APP_ID;
+        const authKey = import.meta.env.VITE_QB_AUTH_KEY;
+        const authSecret = import.meta.env.VITE_QB_AUTH_SECRET;
         const timestamp = Math.floor(Date.now() / 1000);
         const nonce = Math.random().toString(36).substring(2, 15);
+        console.log(authKey)
 
         const params = {
             application_id: applicationId,
@@ -30,7 +33,7 @@ export const useAuthStore = create((set, get) => ({
         try {
             const signature = await generateSignature(params, authSecret);
 
-            const response = await axios.post('https://api.quickblox.com/session.json', {
+            const response = await axios.post('/api/session.json', {
                 signature: signature,
                 nonce: nonce,
                 timestamp: timestamp,
@@ -59,7 +62,7 @@ export const useAuthStore = create((set, get) => ({
         }
 
         try {
-            const response = await axios.get("https://api.quickblox.com/session.json", {
+            const response = await axios.get("/api/session.json", {
                 headers: {
                     accept: 'application/json',
                     'QB-Token': userToken
@@ -79,9 +82,8 @@ export const useAuthStore = create((set, get) => ({
     signup: async (data) => {
         set({ isSigningUp: true });
         try {
-            //user with api key
-            const apiKey = 'I56Jo7P7v9RZB5rLqG9wlIlAIrXSFqaT38fuCQAr5fg';
-            const signupResponse = await axios.post('https://api.quickblox.com/users.json',
+            const apiKey = import.meta.env.VITE_QB_CHAT_API_KEY;
+            const signupResponse = await axios.post('/api/users.json',
                 { user: data },
                 {
                     headers: {
@@ -95,7 +97,7 @@ export const useAuthStore = create((set, get) => ({
             //user session token
             const userId = signupResponse.data.user.id;
             const userSessionResponse = await axios.post(
-                `https://api.quickblox.com/users/${userId}/tokens`,
+                `/api/users/${userId}/tokens`,
                 {},
                 {
                     headers: {
@@ -120,13 +122,15 @@ export const useAuthStore = create((set, get) => ({
     logout: async () => {
         const userToken = get().userToken;
         try {
-            await axios.delete('https://api.quickblox.com/login.json', {
+            await axios.delete('/api/login.json', {
                 headers: {
                     accept: 'application/json',
                     'QB-Token': userToken
                 }
             });
             localStorage.removeItem('userToken')
+            useChatStore.getState().clearDialogs();
+            useChatStore.getState().clearMsg()
             set({ authUser: null, userToken: null });
             toast.success('Logged out successfully');
         } catch (error) {
@@ -134,10 +138,11 @@ export const useAuthStore = create((set, get) => ({
         }
     },
     login: async (login, password) => {
+        console.log(import.meta.env.QB_AUTH_KEY)
         set({ isLoggingIn: true });
         try {
             const appToken = get().appToken;
-            const loginResponse = await axios.post('https://api.quickblox.com/login.json',
+            const loginResponse = await axios.post('/api/login.json',
                 { login, password },
                 {
                     headers: {
@@ -149,9 +154,9 @@ export const useAuthStore = create((set, get) => ({
             );
             //user session token
             const userId = loginResponse.data.user.id;
-            const apiKey = 'I56Jo7P7v9RZB5rLqG9wlIlAIrXSFqaT38fuCQAr5fg';
+            const apiKey = import.meta.env.VITE_QB_CHAT_API_KEY;
             const userSessionResponse = await axios.post(
-                `https://api.quickblox.com/users/${userId}/tokens`,
+                `/api/users/${userId}/tokens`,
                 {},
                 {
                     headers: {
@@ -176,18 +181,17 @@ export const useAuthStore = create((set, get) => ({
     },
     uploadFile: async (file) => {
         try {
-            const apiKey = 'I56Jo7P7v9RZB5rLqG9wlIlAIrXSFqaT38fuCQAr5fg';
+            const apiKey = import.meta.env.VITE_QB_CHAT_API_KEY;
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await axios.post('https://api.quickblox.com/blobs.json', formData, {
+            const response = await axios.post('/api/blobs.json', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `ApiKey ${apiKey}`,
                 },
             });
 
-            // File successfully uploaded; return blob_id
             const blobId = response.data.blob.id;
             return blobId;
         } catch (err) {

@@ -9,24 +9,11 @@ import ChatInput from '../../Components/ChatInput';
 import Grid from '@mui/material/Grid2';
 import { useChatStore } from '../../store/useChatStore';
 import Search from '../../Components/Search'
+import NoChatSelected from '../../Components/NoChatSelected';
 import './chat.css';
 
 const Chat = () => {
     const { dialogId } = useParams();
-    const { getMsg, msg } = useChatStore();
-    const [messages, setMessages] = useState([]);
-
-    console.log(messages)
-    useEffect(() => {
-        if (dialogId) {
-            const fetchMessages = async () => {
-                await getMsg(dialogId);
-                setMessages(msg);
-            };
-            fetchMessages();
-        }
-    }, [dialogId, getMsg]);
-
     return (
         <Container className='chat-container' maxWidth='xxl' disableGutters>
             <Box className='chat-Box'>
@@ -50,7 +37,7 @@ const Chat = () => {
                             <ChatHeader dialogId={dialogId} />
                         </Grid>
                         <Grid item className='chat-bg' sx={{ flex: 1, overflowY: 'auto' }}>
-                            <ChatWindow messages={messages} />
+                            <ChatWindow dialogId={dialogId} />
                         </Grid>
                         <Grid item>
                             <ChatInput dialogId={dialogId} />

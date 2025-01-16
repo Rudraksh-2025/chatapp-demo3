@@ -93,7 +93,7 @@ const MoreOption = () => {
     const handleGrpCreate = () => {
         console.log("Selected Users:", checked);
         if (name) {
-            createDialog({ name: name, users: checked, type: 2 });
+            createDialog({ name: name, checked: checked, type: 2 });
         } else {
             alert("Please enter a group name");
         }
