@@ -25,6 +25,7 @@ const MoreOption = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [name, setName] = useState('')
     const [isModalOpen, setModalOpen] = useState(false);
+    const [isGroupModalOpen, setGroupModalOpen] = useState(false);
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
     const [isChatModalOpen, setChatModalOpen] = useState(false);
     const { logout } = useAuthStore();
@@ -52,8 +53,9 @@ const MoreOption = () => {
         handleMenuClose();
     };
 
-    const handleModalClose = () => {
-        setModalOpen(false);
+    const handleGroupModalOpen = () => {
+        setGroupModalOpen(true);
+        handleMenuClose();
     };
 
     const handleDeleteModalOpen = () => {
@@ -61,8 +63,15 @@ const MoreOption = () => {
         handleMenuClose();
     };
 
+    const handleModalClose = () => {
+        setModalOpen(false);
+        setGroupModalOpen(false);
+        setChecked([]);
+    };
+
     const handleDeleteModalClose = () => {
         setDeleteModalOpen(false);
+        setChecked([]);
     };
 
     const handleNameOpen = () => {
@@ -70,36 +79,38 @@ const MoreOption = () => {
             setChatModalOpen(true);
         }
         handleMenuClose();
+        handleModalClose();
     };
 
     const handleNameClose = () => {
         setChatModalOpen(false);
+
     };
 
     const handleChatCreate = () => {
-        console.log("Selected Users:", checked);
-        const type = checked.length > 1 ? 2 : 3;
-        console.log(type);
-        if (type == 2) {
-            handleNameOpen();
-        }
-        else {
-            createDialog({ checked, type })
-            setChecked([]);
-        }
+        createDialog({ checked, type: 3 })
+        setChecked([]);
         handleMenuClose();
         handleModalClose();
     };
     const handleGrpCreate = () => {
-        console.log("Selected Users:", checked);
-        if (name) {
-            createDialog({ name: name, checked: checked, type: 2 });
-        } else {
+        const groupExists = dialogs.some(dialog => dialog.name.toLowerCase() === name.toLowerCase());
+
+        if (!name.trim()) {
             alert("Please enter a group name");
+            return
         }
+
+        if (groupExists) {
+            alert("Group name already exists. Please choose a unique name.");
+            return
+        }
+
+        createDialog({ name: name, checked: checked, type: 2 });
         handleNameClose();
         setChecked([]);
-    }
+    };
+
 
     const handleDeleteChat = () => {
         console.log("Deleting selected chats...");
@@ -145,7 +156,7 @@ const MoreOption = () => {
                 }}
             >
                 <MenuItem onClick={handleModalOpen}>Create New Chat</MenuItem>
-                <MenuItem onClick={handleModalOpen}>Create New Group</MenuItem>
+                <MenuItem onClick={handleGroupModalOpen}>Create New Group</MenuItem>
                 <MenuItem onClick={handleDeleteModalOpen}>Delete Chat</MenuItem>
                 <MenuItem onClick={logout}>Logout</MenuItem>
             </Menu>
@@ -172,7 +183,66 @@ const MoreOption = () => {
                         >
                             Create New Chat
                         </Typography>
-                        <button onClick={handleChatCreate}>Create</button>
+                        <button disabled={checked.length === 0} onClick={handleChatCreate}>Create</button>
+                    </Box>
+                    <Box id="modal-description" sx={{ mt: 2 }}>
+                        <List dense sx={{ width: "100%", maxWidth: 360 }}>
+                            {users?.map((value, index) => {
+                                const labelId = `checkbox-list-secondary-label-${value.id}`;
+                                return (
+                                    <ListItem
+                                        key={index}
+                                        secondaryAction={
+                                            <Checkbox
+                                                edge="end"
+                                                disabled={checked.length === 1 && !checked.includes(value.user.id)}
+                                                sx={{ color: "var(--light-gray)" }}
+                                                onChange={handleToggle(value.user.id)}
+                                                checked={checked.includes(value.user.id)}
+                                                inputProps={{ "aria-labelledby": labelId }}
+                                            />
+                                        }
+                                        disablePadding
+                                    >
+                                        <ListItemButton>
+                                            <ListItemAvatar>
+                                                <Avatar
+                                                    alt={value.user.name}
+                                                    src={value.user.blob_id}
+                                                />
+                                            </ListItemAvatar>
+                                            <ListItemText id={labelId} primary={value.user.login} />
+                                        </ListItemButton>
+                                    </ListItem>
+                                );
+                            })}
+                        </List>
+                    </Box>
+                </Box>
+            </Modal>
+            {/* create Group chat Modal */}
+            <Modal
+                open={isGroupModalOpen}
+                onClose={handleModalClose}
+                aria-labelledby="modal-title"
+                aria-describedby="modal-description"
+            >
+                <Box className="modal-style">
+                    <Box
+                        sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <Typography
+                            sx={{ textAlign: "center" }}
+                            id="modal-title"
+                            variant="h6"
+                        >
+                            Create New Chat
+                        </Typography>
+                        <button onClick={handleNameOpen}>Create</button>
                     </Box>
                     <Box id="modal-description" sx={{ mt: 2 }}>
                         <List dense sx={{ width: "100%", maxWidth: 360 }}>

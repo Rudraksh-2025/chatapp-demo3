@@ -21,13 +21,13 @@ const ChatHeader = ({ dialogId }) => {
         <Box
         >
             {CurrentDialog?.map((dialog, index) => (
-                <Box className='chatHeader-container' index={index}>
+                <Box className='chatHeader-container' key={index} index={index}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                         <Avatar alt="Anil" src="https://via.placeholder.com/50" />
                         <Box>
                             <Typography variant="h6" sx={{ color: 'var(--light-gray) ' }} >{dialog.name}</Typography>
                             <Typography sx={{ color: 'var(--light-gray)' }} variant="body2" color="textSecondary">
-                                Online - Last seen, {FormatTimeStampHeader(dialog.last_message_date_sent)}
+                                Last sent, {FormatTimeStampHeader(dialog.last_message_date_sent)}
                             </Typography>
                         </Box>
                     </Box>

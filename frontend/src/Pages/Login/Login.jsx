@@ -23,6 +23,13 @@ const Login = () => {
         await login(username, password);
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            console.log(e.key)
+            handleSubmit(e);
+        }
+    };
+
     return (
         <>
             <Container maxWidth="xxl" className="login-container">
@@ -71,6 +78,7 @@ const Login = () => {
                                     id="outlined-password"
                                     label="Password"
                                     variant="outlined"
+                                    onKeyDown={handleKeyPress}
                                 />
                                 <div className='btn-container'><Button
                                     onClick={handleSubmit}

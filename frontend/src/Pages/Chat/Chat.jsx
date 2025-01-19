@@ -32,17 +32,23 @@ const Chat = () => {
                             <PeopleList />
                         </Grid>
                     </Grid>
-                    <Grid item container direction="column" flexGrow={1} sx={{ height: '100vh' }}>
-                        <Grid item>
-                            <ChatHeader dialogId={dialogId} />
-                        </Grid>
-                        <Grid item className='chat-bg' sx={{ flex: 1, overflowY: 'auto' }}>
-                            <ChatWindow dialogId={dialogId} />
-                        </Grid>
-                        <Grid item>
-                            <ChatInput dialogId={dialogId} />
-                        </Grid>
-                    </Grid>
+                    {
+                        dialogId ?
+                            (
+                                <Grid item container direction="column" flexGrow={1} sx={{ height: '100vh' }}>
+                                    <Grid item>
+                                        <ChatHeader dialogId={dialogId} />
+                                    </Grid>
+                                    <Grid item className='chat-bg' sx={{ flex: 1, overflowY: 'auto' }}>
+                                        <ChatWindow dialogId={dialogId} />
+                                    </Grid>
+                                    <Grid item>
+                                        <ChatInput dialogId={dialogId} />
+                                    </Grid>
+                                </Grid>
+                            ) :
+                            (<Grid item className='chat-bg2' container direction="column" flexGrow={1} sx={{ height: '100vh' }}></Grid>)
+                    }
                 </Grid>
             </Box>
         </Container>

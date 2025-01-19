@@ -96,7 +96,7 @@ const ChatInput = ({ dialogId }) => {
                 fullWidth
                 value={message}
                 disabled={isSendingMsg}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 onChange={(e) => setMessage(e.target.value)}
 
                 size='small'

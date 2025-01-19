@@ -107,10 +107,10 @@ export const useUserStore = create((set, get) => ({
                 },
             });
             const user = response.data.user;
-            return user.login || 'Unknown User';
+            set({ username: user.login })
+            return user.login
         } catch (error) {
             console.error('Error fetching user name:', error);
-            return 'Error Fetching Name';
         }
     }
 

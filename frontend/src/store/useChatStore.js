@@ -140,5 +140,8 @@ export const useChatStore = create((set, get) => ({
     clearMsg: () => {
         set({ msg: [] })
     },
-    setDialogUser: (selectedDialogId) => set({ CurrentDialogId: selectedDialogId }),
+    setDialogUser: (selectedDialogId) => {
+        set({ CurrentDialogId: selectedDialogId })
+    },
+    clearDialogUser: () => set({ CurrentDialogId: null })
 }))

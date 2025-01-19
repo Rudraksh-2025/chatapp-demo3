@@ -14,10 +14,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 
 export const PeopleList = () => {
-    const [selectedIndex, setSelectedIndex] = useState(null);
-    const { dialogs, getDialogs } = useChatStore();
+    const { dialogs, getDialogs, setDialogUser, CurrentDialogId } = useChatStore();
     const { authUser, isCheckingAuth } = useAuthStore();
     const navigate = useNavigate();
+    const [selectedDialogId, setSelectedDialogId] = useState(
+        localStorage.getItem('selectedDialogId') || null
+    );
 
     useEffect(() => {
         if (authUser) {
@@ -28,12 +30,21 @@ export const PeopleList = () => {
         }, 2000);
         return () => clearInterval(intervalId);
     }, [authUser, getDialogs]);
+
+    useEffect(() => {
+        if (selectedDialogId) {
+            setDialogUser(selectedDialogId);
+        }
+    }, [selectedDialogId, setDialogUser]);
+
     if (isCheckingAuth) {
         return <Typography>Loading...</Typography>;
     }
 
-    const handleDialogClick = (dialog, index) => {
-        setSelectedIndex(index);
+    const handleDialogClick = (dialog) => {
+        setSelectedDialogId(dialog._id);
+        localStorage.setItem('selectedDialogId', dialog._id);
+        setDialogUser(dialog._id);
         navigate(`/chat/${dialog._id}`);
     };
 
@@ -47,19 +58,19 @@ export const PeopleList = () => {
             </Box>
 
             <List>
-                {dialogs?.map((dialog, index) => (
+                {dialogs?.map((dialog) => (
                     <ListItem
-                        key={index}
+                        key={dialog._id}
                         className="people-list"
-                        onClick={() => handleDialogClick(dialog, index)}
+                        onClick={() => handleDialogClick(dialog)}
                         sx={{
                             px: 2,
                             py: '3px',
                             borderTop: '1px solid #2A3942',
-                            backgroundColor: selectedIndex === index ? '#2A3942' : 'transparent',
+                            backgroundColor: selectedDialogId === dialog._id ? '#2A3942' : 'transparent',
                             cursor: 'pointer',
                             '&:hover': {
-                                backgroundColor: selectedIndex === index ? '#2A3942' : 'rgba(255, 255, 255, 0.04)',
+                                backgroundColor: selectedDialogId === dialog._id ? '#2A3942' : 'rgba(255, 255, 255, 0.04)',
                             },
                         }}
                     >
@@ -77,9 +88,11 @@ export const PeopleList = () => {
                                         color: 'var(--medium-gray)',
                                     }}
                                 >
-                                    <span>{dialog.last_message && dialog.last_message.length > 20
-                                        ? dialog.last_message.slice(0, 20) + '...'
-                                        : dialog.last_message || ''}</span>
+                                    <span>
+                                        {dialog.last_message && dialog.last_message.length > 20
+                                            ? dialog.last_message.slice(0, 20) + '...'
+                                            : dialog.last_message || ''}
+                                    </span>
                                     <Typography
                                         variant="caption"
                                         component="span"
