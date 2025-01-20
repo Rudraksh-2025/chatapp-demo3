@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 
 export const PeopleList = () => {
-    const { dialogs, getDialogs, setDialogUser, CurrentDialogId } = useChatStore();
+    const { dialogs, getDialogs, setDialogUser } = useChatStore();
     const { authUser, isCheckingAuth } = useAuthStore();
     const navigate = useNavigate();
     const [selectedDialogId, setSelectedDialogId] = useState(
@@ -27,6 +27,7 @@ export const PeopleList = () => {
         }
         const intervalId = setInterval(() => {
             getDialogs();
+
         }, 2000);
         return () => clearInterval(intervalId);
     }, [authUser, getDialogs]);
@@ -36,6 +37,8 @@ export const PeopleList = () => {
             setDialogUser(selectedDialogId);
         }
     }, [selectedDialogId, setDialogUser]);
+
+
 
     if (isCheckingAuth) {
         return <Typography>Loading...</Typography>;
@@ -47,6 +50,7 @@ export const PeopleList = () => {
         setDialogUser(dialog._id);
         navigate(`/chat/${dialog._id}`);
     };
+
 
     return (
         <Box className="chatList-container" sx={{ flex: 1 }}>
@@ -77,7 +81,32 @@ export const PeopleList = () => {
                         <Avatar sx={{ marginRight: 2 }}>{dialog.name[0]}</Avatar>
                         <ListItemText
                             sx={{ color: 'var(--light-gray)' }}
-                            primary={dialog.name}
+                            primary={<Typography
+                                component="span"
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <span> {dialog.name}</span>
+                                <Typography
+                                    component="span"
+                                    sx={{
+                                        backgroundColor: dialog.unread_messages_count > 0 ? '#FF5733' : 'transparent',
+                                        color: 'white',
+                                        fontSize: '12px',
+                                        fontWeight: 'bold',
+                                        borderRadius: '50%',
+                                        padding: dialog.unread_messages_count > 0 ? '0px 6px' : '0',
+                                        textAlign: 'center',
+                                        marginLeft: '8px',
+                                        display: dialog.unread_messages_count > 0 ? 'inline-block' : 'none',
+                                    }}
+                                >
+                                    {dialog.unread_messages_count}
+                                </Typography>
+                            </Typography>}
                             secondary={
                                 <Typography
                                     component="span"

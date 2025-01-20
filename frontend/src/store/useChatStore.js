@@ -10,6 +10,8 @@ export const useChatStore = create((set, get) => ({
     msg: [],
     isSendingMsg: false,
     recipient_id: null,
+    isLoadingMsg: false,
+    unReadCount: 0,
 
     createDialog: async (data) => {
         const { authUser } = useAuthStore.getState();
@@ -55,7 +57,6 @@ export const useChatStore = create((set, get) => ({
                 }
             })
             set({ dialogs: response.data.items })
-
         } catch (error) {
             // toast('error in fetching dialogs')
             console.log(error)
@@ -133,6 +134,7 @@ export const useChatStore = create((set, get) => ({
             // toast('error in getting messages')
             set({ msg: [] })
         }
+
     },
     clearDialogs: () => {
         set({ dialogs: [] });
@@ -143,5 +145,48 @@ export const useChatStore = create((set, get) => ({
     setDialogUser: (selectedDialogId) => {
         set({ CurrentDialogId: selectedDialogId })
     },
-    clearDialogUser: () => set({ CurrentDialogId: null })
+    clearDialogUser: () => set({ CurrentDialogId: null }),
+    getUnreadCount: async (dialogIds) => {
+        const apikey = get().apikey;
+        const { authUser } = useAuthStore.getState();
+        const userId = authUser.session.user_id
+        try {
+            // const dialogIdsString = dialogIds.join(',');
+            const response = await axios.get(`/api/chat/Message/unread.json?chat_dialog_ids=${dialogIds}`, {
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                    Authorization: `ApiKey ${apikey}`,
+                    'On-Behalf-Of': userId.toString(),
+                }
+            })
+            return response.data;
+        } catch (error) {
+            console.log(error)
+        }
+    },
+    createFile: async () => {
+        const { userToken } = useAuthStore.getState()
+        try {
+            const response = await axios.post('/api/blobs.json', {
+                body: JSON.stringify({ blob: { public: 'false', content_type: 'MIME', name: 'rudi' } })
+            }, {
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                    'QB-Token': userToken,
+                }
+            })
+            console.log('File created successfully:', response.data);
+        } catch (error) {
+            console.log(error)
+        }
+    },
+    uploadFile: async () => {
+        try {
+            const response = await axios.post('')
+        } catch (error) {
+
+        }
+    }
 }))

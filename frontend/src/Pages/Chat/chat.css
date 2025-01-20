@@ -83,6 +83,8 @@ body {
   /* color: white; */
 }
 
-.haalo{
-  
+.unread{
+  display: flex;
+  flex-direction: column;
+  margin:0;
 }
