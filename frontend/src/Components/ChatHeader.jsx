@@ -5,7 +5,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useChatStore } from '../store/useChatStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { FormatTimeStampHeader } from '../utils/FormatTimeStamp';
-
+import ProfilePhoto from './ProfilePhoto';
 
 const ChatHeader = ({ dialogId }) => {
     const { dialogs, getDialogs } = useChatStore();
@@ -23,7 +23,8 @@ const ChatHeader = ({ dialogId }) => {
             {CurrentDialog?.map((dialog, index) => (
                 <Box className='chatHeader-container' key={index} index={index}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Avatar alt="Anil" src="https://via.placeholder.com/50" />
+                        {/* <Avatar alt="Anil" src={pp1} /> */}
+                        <ProfilePhoto dialogId={dialog._id} />
                         <Box>
                             <Typography variant="h6" sx={{ color: 'var(--light-gray) ' }} >{dialog.name}</Typography>
                             <Typography sx={{ color: 'var(--light-gray)' }} variant="body2" color="textSecondary">

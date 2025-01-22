@@ -19,7 +19,7 @@ const ChatWindow = () => {
         getMsg(dialogId);
         const intervalId = setInterval(() => {
             getMsg(dialogId);
-        }, 2000);
+        }, 5000);
 
         return () => clearInterval(intervalId);
     }, [dialogId, getMsg]);

@@ -1,44 +1,107 @@
 import React, { useState } from 'react';
-import { Box, TextField, IconButton, Modal } from '@mui/material';
+import { Box, TextField, IconButton, Modal, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 import SendIcon from '@mui/icons-material/Send';
-import { emoji } from '../utils/Emoji'
+import CloseIcon from '@mui/icons-material/Close';
+import { emoji } from '../utils/Emoji';
 import { useChatStore } from '../store/useChatStore';
 
 const ChatInput = ({ dialogId }) => {
-    const { recipient_id, isSendingMsg, createMsg } = useChatStore();
+    const { recipient_id, isSendingMsg, createMsg, createFile } = useChatStore();
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [file, setFile] = useState(null);
+    const [filePreview, setFilePreview] = useState('');
+    const [fileId, setFileId] = useState('');
+    const [name, setName] = useState('');
+    const [ContentType, setContentType] = useState('');
+
+
     const handleEmojiClick = (emoji) => {
         setMessage((prev) => prev + emoji);
         setOpen(false);
     };
-    const handleFileChange = (event) => {
+
+    const handleFileChange = async (event) => {
         const selectedFile = event.target.files[0];
-        if (selectedFile) {
+        if (!selectedFile) return; // Exit if no file is selected
+
+        // Validate file type
+        if (!selectedFile.type.startsWith("image/")) {
+            console.error("Selected file is not an image.");
+            return;
+        }
+
+        try {
+            // Convert image to Base64 using a Promise
+
+            const base64String = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = (error) => reject(error);
+                reader.readAsDataURL(selectedFile);
+            });
+
+            const modifyBase64String = (base64, fileName) => {
+                const parts = base64.split(';base64,');
+                if (parts.length !== 2) throw new Error('Invalid Base64 format');
+                const mimeType = parts[0]; // Example: data:image/jpeg
+                const base64Data = parts[1]; // Example: /9j/4Q/...
+                return `${mimeType};name=${fileName};base64,${base64Data}`;
+            };
+
+            const modifiedBase64String = modifyBase64String(base64String, selectedFile.name);
+            // Set preview and send Base64 string to createFile
+            setFilePreview(modifiedBase64String);
             setFile(selectedFile);
-            console.log('File selected:', selectedFile.name);
+            const uploadedFile = await createFile(selectedFile, modifiedBase64String);
+            if (uploadedFile) {
+                setFileId(uploadedFile.id);
+                setContentType(uploadedFile.content_type)
+                setName(uploadedFile.name)
+                console.log("File uploaded:", uploadedFile);
+            }
+        } catch (error) {
+            console.error("Error handling file:", error);
+            removeFile(); // Reset state on error
         }
     };
+
+
+    const removeFile = () => {
+        setFile(null);
+        setFilePreview('');
+        setFileId('');
+        setContentType('')
+        setName('')
+    };
+
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSend();
         }
     };
+
     const handleSend = async () => {
-        if (message.trim() && dialogId) {
-            await createMsg({ chat_dialog_id: dialogId, message: message.trim(), recipient_id: recipient_id });
+        if (message.trim() || fileId) {
+            const msgData = {
+                chat_dialog_id: dialogId,
+                message: message.trim(),
+                recipient_id: recipient_id,
+                attachments: fileId ? { id: fileId, type: 'image', content_type: ContentType, name: name } : '',
+            };
+            await createMsg(msgData);
+            // Clear form
             setMessage('');
+            removeFile();
         }
     };
+
     return (
-        <Box
-            className="chat-input-container"
-        >
+        <Box className="chat-input-container" sx={{ padding: 2 }}>
             <IconButton sx={{ color: 'var(--medium-gray)' }} onClick={() => setOpen(true)}>
                 <EmojiEmotionsIcon />
             </IconButton>
@@ -83,14 +146,65 @@ const ChatInput = ({ dialogId }) => {
                     </Grid>
                 </Box>
             </Modal>
+
             <IconButton component="label">
                 <AttachFileIcon sx={{ color: 'var(--medium-gray)' }} />
                 <input
                     type="file"
                     hidden
+                    accept="image/*"
                     onChange={handleFileChange}
                 />
             </IconButton>
+            {filePreview && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 2,
+                        mb: 2,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        borderRadius: 2,
+                        padding: 1.5,
+                        bgcolor: 'background.paper',
+                        boxShadow: 1,
+                    }}
+                >
+                    <Box
+                        component="img"
+                        src={filePreview}
+                        alt="Preview"
+                        sx={{
+                            width: 60,
+                            height: 60,
+                            borderRadius: 1,
+                            objectFit: 'cover',
+                            border: '1px solid',
+                            borderColor: 'divider',
+                        }}
+                    />
+                    <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
+                        <Typography
+                            variant="body2"
+                            noWrap
+                            sx={{ fontWeight: 500, color: 'text.primary' }}
+                        >
+                            {file.name}
+                        </Typography>
+                        <Typography
+                            variant="caption"
+                            sx={{ color: 'text.secondary' }}
+                        >
+                            {Math.round(file.size / 1024)} KB
+                        </Typography>
+                    </Box>
+                    <IconButton size="small" onClick={removeFile} sx={{ color: 'error.main' }}>
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+            )}
+
             <TextField
                 variant="outlined"
                 fullWidth
@@ -98,10 +212,9 @@ const ChatInput = ({ dialogId }) => {
                 disabled={isSendingMsg}
                 onKeyDown={handleKeyPress}
                 onChange={(e) => setMessage(e.target.value)}
-
-                size='small'
-                autoComplete='off'
-                className='text-field-input'
+                size="small"
+                autoComplete="off"
+                className="text-field-input"
                 placeholder="Type your message here..."
                 sx={{
                     marginX: 2,
@@ -125,7 +238,8 @@ const ChatInput = ({ dialogId }) => {
                     },
                 }}
             />
-            <IconButton onClick={handleSend} disabled={isSendingMsg || !message.trim()}>
+
+            <IconButton onClick={handleSend} disabled={isSendingMsg || (!message.trim() && !filePreview)}>
                 <SendIcon sx={{ color: isSendingMsg ? '#B0B0B0' : 'var(--medium-gray)' }} />
             </IconButton>
         </Box>

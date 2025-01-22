@@ -131,6 +131,7 @@ export const useAuthStore = create((set, get) => ({
             localStorage.removeItem('userToken')
             useChatStore.getState().clearDialogs();
             useChatStore.getState().clearMsg()
+            localStorage.removeItem('selectedDialogId')
             set({ authUser: null, userToken: null });
             toast.success('Logged out successfully');
         } catch (error) {

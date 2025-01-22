@@ -3,6 +3,8 @@ import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Logo from '../../assets/Whisper.png';
 import './login.css';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -11,12 +13,14 @@ import { useNavigate } from 'react-router-dom';
 import LockIcon from '@mui/icons-material/Lock';
 import consult from '../../assets/consult.gif';
 import { Link } from 'react-router-dom'
+import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import Base from './Base';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [showpass, setshowpass] = useState('')
     const { login, isLoggingIn } = useAuthStore();
-    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -25,7 +29,6 @@ const Login = () => {
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
-            console.log(e.key)
             handleSubmit(e);
         }
     };
@@ -33,6 +36,7 @@ const Login = () => {
     return (
         <>
             <Container maxWidth="xxl" className="login-container">
+
                 <div className="logo">
                     <img src={Logo} alt="Logo" />
                 </div>
@@ -67,19 +71,32 @@ const Login = () => {
                                     label="Username"
                                     variant="outlined"
                                 />
-                                <TextField
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    type="password"
-                                    required
-                                    fullWidth
-                                    size='medium'
-                                    margin="normal"
-                                    color="success"
-                                    id="outlined-password"
-                                    label="Password"
-                                    variant="outlined"
-                                    onKeyDown={handleKeyPress}
-                                />
+                                <div style={{ position: "relative" }}>
+                                    <TextField
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        type={showpass ? "text" : "password"}
+                                        required
+                                        fullWidth
+                                        size="medium"
+                                        margin="normal"
+                                        color="success"
+                                        id="outlined-password"
+                                        label="Password"
+                                        variant="outlined"
+                                        onKeyDown={handleKeyPress}
+                                    />
+                                    {showpass ? (
+                                        <FaEye
+                                            style={{ position: "absolute", right: 10, top: 30, cursor: "pointer" }}
+                                            onClick={() => setshowpass(!showpass)}
+                                        />
+                                    ) : (
+                                        <FaEyeSlash
+                                            style={{ position: "absolute", right: 10, top: 30, cursor: "pointer" }}
+                                            onClick={() => setshowpass(!showpass)}
+                                        />
+                                    )}
+                                </div>
                                 <div className='btn-container'><Button
                                     onClick={handleSubmit}
                                     disabled={isLoggingIn}

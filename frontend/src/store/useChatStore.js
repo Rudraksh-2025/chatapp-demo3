@@ -13,6 +13,8 @@ export const useChatStore = create((set, get) => ({
     isLoadingMsg: false,
     unReadCount: 0,
 
+
+
     createDialog: async (data) => {
         const { authUser } = useAuthStore.getState();
         const apikey = get().apikey;
@@ -37,9 +39,7 @@ export const useChatStore = create((set, get) => ({
             });
             await get().getDialogs();
             set({ CurrentDialogId: response.data._id });
-            toast('Dialog successfully created');
         } catch (error) {
-            toast.error('Error in creating dialog');
             console.error(error);
         }
     },
@@ -83,7 +83,6 @@ export const useChatStore = create((set, get) => ({
     createMsg: async (data) => {
         const { authUser } = useAuthStore.getState();
         const userId = authUser.session.user_id
-
         const apikey = get().apikey;
         try {
             set({ isSendingMsg: true })
@@ -91,7 +90,8 @@ export const useChatStore = create((set, get) => ({
                 "chat_dialog_id": data.chat_dialog_id,
                 "message": data.message,
                 "recipient_id": data.recipient_id,
-                "send_to_chat": 1
+                "send_to_chat": 1,
+                attachments: { N: { id: data.attachments.id, type: 'image', name: data.attachments.name, 'content-type': data.attachments.content_type } }
             }, {
                 headers: {
                     accept: 'application/json',
@@ -106,6 +106,7 @@ export const useChatStore = create((set, get) => ({
             // toast('msg created successfully')
         } catch (error) {
             toast('error in creating message')
+            console.log(error)
         }
         finally {
             set({ isSendingMsg: false })
@@ -165,28 +166,40 @@ export const useChatStore = create((set, get) => ({
             console.log(error)
         }
     },
-    createFile: async () => {
-        const { userToken } = useAuthStore.getState()
+    createFile: async (file, modifiedBase64String) => {
+        const { userToken } = useAuthStore.getState();
         try {
             const response = await axios.post('/api/blobs.json', {
-                body: JSON.stringify({ blob: { public: 'false', content_type: 'MIME', name: 'rudi' } })
+                blob: { public: 'false', content_type: file.type.toString(), name: file.name.toString(), tag_list: 'string' }
             }, {
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
                     'QB-Token': userToken,
                 }
-            })
-            console.log('File created successfully:', response.data);
+            });
+
+            const uploadUrl = response.data.blob.blob_object_access.params;
+            const key = response.data.blob.uid;
+            const id = response.data.blob.id;
+            await axios.post(uploadUrl, {
+                key: key.toString(),
+                file: modifiedBase64String
+            }, {
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json'
+                }
+            });
+
+            return {
+                id: id,
+                name: file.name,
+                content_type: file.type
+            };
         } catch (error) {
-            console.log(error)
+            console.error('Error creating file:', error);
+            throw error;
         }
     },
-    uploadFile: async () => {
-        try {
-            const response = await axios.post('')
-        } catch (error) {
-
-        }
-    }
 }))

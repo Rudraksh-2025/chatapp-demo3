@@ -4,6 +4,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import ChatIcon from '@mui/icons-material/Chat';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuthStore } from '../store/useAuthStore';
+import pp12 from '../assets/ProfilePhotos/pp12.jpg';
 
 const Sidebar = () => {
     const { logout } = useAuthStore()
@@ -22,7 +23,7 @@ const Sidebar = () => {
         >
             <IconButton>
                 <img
-                    src="https://via.placeholder.com/50"
+                    src={pp12}
                     alt="profile"
                     style={{
                         width: '40px',
