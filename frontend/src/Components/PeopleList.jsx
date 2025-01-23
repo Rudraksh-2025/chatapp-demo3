@@ -27,9 +27,10 @@ export const PeopleList = () => {
             getDialogs();
         }
         const intervalId = setInterval(() => {
+            setSelectedDialogId(localStorage.getItem('selectedDialogId'))
             getDialogs();
 
-        }, 1000);
+        }, 2000);
         return () => clearInterval(intervalId);
     }, [authUser, getDialogs]);
 

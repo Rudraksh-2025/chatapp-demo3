@@ -28,6 +28,10 @@ const Chat = () => {
                         <Grid item sx={{
                             flex: 1,
                             overflowY: 'auto',
+                            scrollbarWidth: 'none',
+                            '&::-webkit-scrollbar': {
+                                display: 'none',
+                            },
                         }} >
                             <PeopleList />
                         </Grid>
