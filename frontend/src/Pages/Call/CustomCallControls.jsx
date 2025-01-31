@@ -1,5 +1,3 @@
-// src/components/CustomCallControls.jsx
-
 import React, { useState, useEffect } from 'react';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import MicIcon from '@mui/icons-material/Mic';
