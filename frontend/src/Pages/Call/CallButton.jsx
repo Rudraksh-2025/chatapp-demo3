@@ -15,7 +15,7 @@ import { useWebSocket } from '../../Contexts/WebSocketContext.jsx';
 import { useUserStore } from '../../store/useUserStore.js';
 import CloseIcon from '@mui/icons-material/Close';
 // import CustomCallControls from './CustomCallControls'; 
-import { getVideoClient, resetVideoClient } from '../../utils/videoClient.js';
+import { getVideoClient, resetVideoClient } from '../../utils/VideoClient.js';
 
 const apiKey = import.meta.env.VITE_STEAM_API;
 
