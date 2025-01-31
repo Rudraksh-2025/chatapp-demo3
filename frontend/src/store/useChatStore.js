@@ -144,25 +144,25 @@ export const useChatStore = create((set, get) => ({
         set({ CurrentDialogId: selectedDialogId })
     },
     clearDialogUser: () => set({ CurrentDialogId: null }),
-    getUnreadCount: async (dialogIds) => {
-        const apikey = get().apikey;
-        const { authUser } = useAuthStore.getState();
-        const userId = authUser.session.user_id
-        try {
-            // const dialogIdsString = dialogIds.join(',');
-            const response = await axios.get(`https://api.quickblox.com/chat/Message/unread.json?chat_dialog_ids=${dialogIds}`, {
-                headers: {
-                    accept: 'application/json',
-                    'content-type': 'application/json',
-                    Authorization: `ApiKey ${apikey}`,
-                    'On-Behalf-Of': userId.toString(),
-                }
-            })
-            return response.data;
-        } catch (error) {
-            console.log(error)
-        }
-    },
+    // getUnreadCount: async (dialogIds) => {
+    //     const apikey = get().apikey;
+    //     const { authUser } = useAuthStore.getState();
+    //     const userId = authUser.session.user_id
+    //     try {
+    //         // const dialogIdsString = dialogIds.join(',');
+    //         const response = await axios.get(`https://api.quickblox.com/chat/Message/unread.json?chat_dialog_ids=${dialogIds}`, {
+    //             headers: {
+    //                 accept: 'application/json',
+    //                 'content-type': 'application/json',
+    //                 Authorization: `ApiKey ${apikey}`,
+    //                 'On-Behalf-Of': userId.toString(),
+    //             }
+    //         })
+    //         return response.data;
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // },
     createFile: async (file, modifiedBase64String) => {
         const { userToken } = useAuthStore.getState();
         try {
