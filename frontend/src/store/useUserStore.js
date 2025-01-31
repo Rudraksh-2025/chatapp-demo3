@@ -39,8 +39,9 @@ export const useUserStore = create((set, get) => ({
                 }
             })
             set({ user: response.data, isFetching: false })
+            return response.data
         } catch (error) {
-            toast.error("error in fetching user")
+            // toast.error("error in fetching user")
             console.log(error)
         }
         finally {

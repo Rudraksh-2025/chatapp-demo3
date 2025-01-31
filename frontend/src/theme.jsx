@@ -29,6 +29,11 @@ const theme = createTheme({
             fontWeight: 500,
         },
         // Body variants
+        body0: {
+            fontFamily: '"Montserrat", sans-serif',
+            fontWeight: 400,
+            fontSize: '1rem', // bigger than body1
+        },
         body1: {
             fontFamily: '"Montserrat", sans-serif',
             fontWeight: 400,

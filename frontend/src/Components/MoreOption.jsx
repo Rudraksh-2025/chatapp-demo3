@@ -20,7 +20,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 import { useUserStore } from "../store/useUserStore";
-
+import { useNavigate, useParams } from 'react-router-dom';
 const MoreOption = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [name, setName] = useState('')
@@ -32,6 +32,8 @@ const MoreOption = () => {
     const { createDialog, dialogs, getDialogs, deleteDialog } = useChatStore();
     const { users, getUsers } = useUserStore();
     const [checked, setChecked] = useState([]);
+    const navigate = useNavigate();
+    const { dialogId } = useParams();
 
     useEffect(() => {
         getUsers();
@@ -88,6 +90,10 @@ const MoreOption = () => {
     };
 
     const handleChatCreate = () => {
+        console.log(dialogs)
+        console.log(checked)
+        const filter = dialogs?.filter((dialog) => dialog.user_id === checked)
+        console.log(filter)
         createDialog({ checked, type: 3 })
         setChecked([]);
         handleMenuClose();
@@ -113,9 +119,10 @@ const MoreOption = () => {
 
 
     const handleDeleteChat = () => {
-        console.log("Deleting selected chats...");
-        console.log(checked)
         deleteDialog(checked)
+        if (checked.includes(dialogId)) {
+            navigate("/");
+        }
         handleMenuClose();
         handleDeleteModalClose();
         setChecked([]);

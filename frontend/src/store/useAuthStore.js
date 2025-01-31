@@ -21,7 +21,6 @@ export const useAuthStore = create((set, get) => ({
         const authSecret = import.meta.env.VITE_QB_AUTH_SECRET;
         const timestamp = Math.floor(Date.now() / 1000);
         const nonce = Math.random().toString(36).substring(2, 15);
-        console.log(authKey)
 
         const params = {
             application_id: applicationId,
@@ -135,7 +134,7 @@ export const useAuthStore = create((set, get) => ({
             set({ authUser: null, userToken: null });
             toast.success('Logged out successfully');
         } catch (error) {
-            toast.error("Error logging out");
+            console.log("Error logging out");
         }
     },
     login: async (login, password) => {

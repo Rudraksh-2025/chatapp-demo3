@@ -23,7 +23,6 @@ export const useChatStore = create((set, get) => ({
             occupants_ids: data.checked,
             type: data.type,
         };
-        console.log(payload.occupants_ids)
         if (data.type === 2) {
             payload.name = data.name;
         }
@@ -46,7 +45,6 @@ export const useChatStore = create((set, get) => ({
     getDialogs: async () => {
         const { authUser } = useAuthStore.getState()
         const apikey = get().apikey
-        const { userToken } = useAuthStore.getState()
         try {
             const userId = authUser.session.user_id
             const response = await axios.get('/api/chat/Dialog.json?include_unread_message_count=1&limit=100&skip=0', {
@@ -58,7 +56,6 @@ export const useChatStore = create((set, get) => ({
             })
             set({ dialogs: response.data.items })
         } catch (error) {
-            // toast('error in fetching dialogs')
             console.log(error)
         }
     },
