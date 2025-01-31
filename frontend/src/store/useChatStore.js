@@ -28,7 +28,7 @@ export const useChatStore = create((set, get) => ({
         }
 
         try {
-            const response = await axios.post('https://api.quickblox.com/chat/Dialog.json', payload, {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/chat/Dialog.json`, payload, {
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -47,7 +47,7 @@ export const useChatStore = create((set, get) => ({
         const apikey = get().apikey
         try {
             const userId = authUser.session.user_id
-            const response = await axios.get('https://api.quickblox.com/chat/Dialog.json?include_unread_message_count=1&limit=100&skip=0', {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/chat/Dialog.json?include_unread_message_count=1&limit=100&skip=0`, {
                 headers: {
                     accept: 'application/json',
                     Authorization: `ApiKey ${apikey}`,
@@ -64,7 +64,7 @@ export const useChatStore = create((set, get) => ({
         const userId = authUser.session.user_id
         const apikey = get().apikey
         try {
-            await axios.delete(`https://api.quickblox.com/chat/Dialog/${chat_dialog_id},${chat_dialog_id}`, {
+            await axios.delete(`${import.meta.env.VITE_API_URL}/chat/Dialog/${chat_dialog_id},${chat_dialog_id}`, {
                 headers: {
                     // "QB-Token": userToken,
                     Authorization: `ApiKey ${apikey}`,
@@ -83,7 +83,7 @@ export const useChatStore = create((set, get) => ({
         const apikey = get().apikey;
         try {
             set({ isSendingMsg: true })
-            await axios.post('https://api.quickblox.com/chat/Message.json', {
+            await axios.post(`${import.meta.env.VITE_API_URL}/chat/Message.json`, {
                 "chat_dialog_id": data.chat_dialog_id,
                 "message": data.message,
                 "recipient_id": data.recipient_id,
@@ -114,7 +114,7 @@ export const useChatStore = create((set, get) => ({
         const userId = authUser.session.user_id
         const apikey = get().apikey;
         try {
-            const response = await axios.get(`https://api.quickblox.com/chat/Message.json?limit=100&skip=0&chat_dialog_id=${chat_dialog_id}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/chat/Message.json?limit=100&skip=0&chat_dialog_id=${chat_dialog_id}`, {
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -147,7 +147,7 @@ export const useChatStore = create((set, get) => ({
     createFile: async (file, modifiedBase64String) => {
         const { userToken } = useAuthStore.getState();
         try {
-            const response = await axios.post('https://api.quickblox.com/blobs.json', {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/blobs.json`, {
                 blob: { public: 'false', content_type: file.type.toString(), name: file.name.toString(), tag_list: 'string' }
             }, {
                 headers: {
