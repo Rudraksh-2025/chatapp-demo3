@@ -8,13 +8,13 @@ export default defineConfig({
   },
   plugins: [react()],
   server: {
-    proxy: {
-      '/api': {
-        target: 'https://api.quickblox.com',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
+    // proxy: {
+    //   '/api': {
+    //     target: 'https://api.quickblox.com',
+    //     changeOrigin: true,
+    //     rewrite: (path) => path.replace(/^\/api/, ''),
+    //   },
+    // },
     host: '0.0.0.0',
     port: 5173,
   }
