@@ -96,7 +96,7 @@ export const useAuthStore = create((set, get) => ({
             //user session token
             const userId = signupResponse.data.user.id;
             const userSessionResponse = await axios.post(
-                `/api/users/${userId}/tokens`,
+                `https://api.quickblox.com/users/${userId}/tokens`,
                 {},
                 {
                     headers: {
@@ -156,7 +156,7 @@ export const useAuthStore = create((set, get) => ({
             const userId = loginResponse.data.user.id;
             const apiKey = import.meta.env.VITE_QB_CHAT_API_KEY;
             const userSessionResponse = await axios.post(
-                `/api/users/${userId}/tokens`,
+                `https://api.quickblox.com/users/${userId}/tokens`,
                 {},
                 {
                     headers: {
