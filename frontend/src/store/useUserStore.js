@@ -15,7 +15,7 @@ export const useUserStore = create((set, get) => ({
         set({ isFetching: true })
         try {
             const { userToken } = useAuthStore.getState()
-            const response = await axios.get('/api/users.json?page=1&per_page=10', {
+            const response = await axios.get('https://api.quickblox.com/users.json?page=1&per_page=10', {
                 headers: {
                     'QB-Token': userToken
                 }
@@ -33,7 +33,7 @@ export const useUserStore = create((set, get) => ({
         set({ isFetching: true })
         try {
             const { userToken } = useAuthStore.getState()
-            const response = await axios.get(`/api/users/${userId}.json`, {
+            const response = await axios.get(`https://api.quickblox.com/users/${userId}.json`, {
                 headers: {
                     'QB-Token': userToken
                 }
@@ -53,7 +53,7 @@ export const useUserStore = create((set, get) => ({
         try {
             const { userToken } = useAuthStore.getState()
             const response = await axios.put(
-                `/api/users/${userId}.json`,
+                `https://api.quickblox.com/users/${userId}.json`,
                 { user: userData },
                 {
                     headers: {
@@ -76,7 +76,7 @@ export const useUserStore = create((set, get) => ({
         try {
             const { userToken } = useAuthStore.getState()
             await axios.delete(
-                `/api/users/${userId}.json`,
+                `https://api.quickblox.com/users/${userId}.json`,
                 {
                     headers: {
                         'QB-Token': userToken
@@ -102,7 +102,7 @@ export const useUserStore = create((set, get) => ({
     getUserName: async (userId) => {
         try {
             const { userToken } = useAuthStore.getState();
-            const response = await axios.get(`/api/users/${userId}.json`, {
+            const response = await axios.get(`https://api.quickblox.com/users/${userId}.json`, {
                 headers: {
                     'QB-Token': userToken,
                 },

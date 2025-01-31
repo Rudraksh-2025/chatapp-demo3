@@ -32,7 +32,7 @@ export const useAuthStore = create((set, get) => ({
         try {
             const signature = await generateSignature(params, authSecret);
 
-            const response = await axios.post('/api/session.json', {
+            const response = await axios.post('https://api.quickblox.com/session.json', {
                 signature: signature,
                 nonce: nonce,
                 timestamp: timestamp,
@@ -61,7 +61,7 @@ export const useAuthStore = create((set, get) => ({
         }
 
         try {
-            const response = await axios.get("/api/session.json", {
+            const response = await axios.get("https://api.quickblox.com/session.json", {
                 headers: {
                     accept: 'application/json',
                     'QB-Token': userToken
@@ -82,7 +82,7 @@ export const useAuthStore = create((set, get) => ({
         set({ isSigningUp: true });
         try {
             const apiKey = import.meta.env.VITE_QB_CHAT_API_KEY;
-            const signupResponse = await axios.post('/api/users.json',
+            const signupResponse = await axios.post('https://api.quickblox.com/users.json',
                 { user: data },
                 {
                     headers: {
@@ -121,7 +121,7 @@ export const useAuthStore = create((set, get) => ({
     logout: async () => {
         const userToken = get().userToken;
         try {
-            await axios.delete('/api/login.json', {
+            await axios.delete('https://api.quickblox.com/login.json', {
                 headers: {
                     accept: 'application/json',
                     'QB-Token': userToken
@@ -142,7 +142,7 @@ export const useAuthStore = create((set, get) => ({
         set({ isLoggingIn: true });
         try {
             const appToken = get().appToken;
-            const loginResponse = await axios.post('/api/login.json',
+            const loginResponse = await axios.post('https://api.quickblox.com/login.json',
                 { login, password },
                 {
                     headers: {
@@ -185,7 +185,7 @@ export const useAuthStore = create((set, get) => ({
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await axios.post('/api/blobs.json', formData, {
+            const response = await axios.post('https://api.quickblox.com/blobs.json', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `ApiKey ${apiKey}`,

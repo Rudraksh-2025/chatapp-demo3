@@ -14,12 +14,10 @@ import "@stream-io/video-react-sdk/dist/css/styles.css";
 import { useWebSocket } from '../../Contexts/WebSocketContext.jsx';
 import { useUserStore } from '../../store/useUserStore.js';
 import CloseIcon from '@mui/icons-material/Close';
-// import CustomCallControls from './CustomCallControls'; 
 import { getVideoClient, resetVideoClient } from '../../utils/VideoClient.js';
 
 const apiKey = import.meta.env.VITE_STEAM_API;
 
-// Fetch token function (unchanged)
 const fetchToken = async (userId) => {
     try {
         const response = await fetch("http://localhost:3001/api/token", {
