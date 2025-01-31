@@ -9,7 +9,7 @@ import {
     CallControls
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
-import { getVideoClient, resetVideoClient } from '../../utils/videoClient.js';
+import { getVideoClient, resetVideoClient } from '../../utils/VideoClient.js';
 
 const fetchToken = async (userId) => {
     try {
