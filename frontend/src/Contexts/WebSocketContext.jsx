@@ -10,10 +10,9 @@ export const WebSocketProvider = ({ children, userId }) => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        // Initialize Socket.IO client
         const backendUrl = import.meta.env.REACT_APP_BACKEND_URL;
         const newSocket = io(backendUrl, {
-            transports: ['websocket'], // Use WebSocket only
+            transports: ['websocket'],
         });
 
         newSocket.on('connect', () => {
@@ -28,7 +27,6 @@ export const WebSocketProvider = ({ children, userId }) => {
 
         setSocket(newSocket);
 
-        // Cleanup on unmount
         return () => {
             newSocket.disconnect();
         };
