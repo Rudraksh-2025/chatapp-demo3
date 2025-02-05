@@ -18,6 +18,7 @@ export const useChatStore = create((set, get) => ({
     createDialog: async (data) => {
         const { authUser } = useAuthStore.getState();
         const apikey = get().apikey;
+        const { userToken } = useAuthStore.getState();
         const userId = authUser.session.user_id
         const payload = {
             occupants_ids: data.checked,
@@ -32,8 +33,9 @@ export const useChatStore = create((set, get) => ({
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
-                    Authorization: `ApiKey ${apikey}`,
-                    'On-Behalf-Of': userId.toString(),
+                    'QB-Token': userToken,
+                    // Authorization: `ApiKey ${apikey}`,
+                    // 'On-Behalf-Of': userId.toString(),
                 },
             });
             await get().getDialogs();
@@ -45,13 +47,15 @@ export const useChatStore = create((set, get) => ({
     getDialogs: async () => {
         const { authUser } = useAuthStore.getState()
         const apikey = get().apikey
+        const { userToken } = useAuthStore.getState();
         try {
             const userId = authUser.session.user_id
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/chat/Dialog.json?include_unread_message_count=1&limit=100&skip=0`, {
                 headers: {
                     accept: 'application/json',
-                    Authorization: `ApiKey ${apikey}`,
-                    'On-Behalf-Of': userId.toString()
+                    'QB-Token': userToken,
+                    // Authorization: `ApiKey ${apikey}`,
+                    // 'On-Behalf-Of': userId.toString()
                 }
             })
             set({ dialogs: response.data.items })
