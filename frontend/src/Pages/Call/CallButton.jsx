@@ -73,7 +73,7 @@ const CallButton = ({ dialogId, currentUserId, userIdToCall }) => {
         if (!socket) return;
         const handleCallEnded = ({ callId: endedCallId }) => {
             if (endedCallId === callId) {
-                alert("Call ended by the other user.");
+                alert("Call ended.");
                 handleClose();
             }
         };

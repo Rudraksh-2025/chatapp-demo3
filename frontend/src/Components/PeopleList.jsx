@@ -10,35 +10,44 @@ import {
 import MoreOption from './MoreOption';
 import { useChatStore } from '../store/useChatStore';
 import { FormatTimeStamp } from '../utils/FormatTimeStamp';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import ProfilePhoto from './ProfilePhoto';
 
 export const PeopleList = () => {
+    const { dialogId: routeDialogId } = useParams();
     const { dialogs, getDialogs, setDialogUser } = useChatStore();
     const { authUser, isCheckingAuth } = useAuthStore();
     const navigate = useNavigate();
-    const [selectedDialogId, setSelectedDialogId] = useState(
-        localStorage.getItem('selectedDialogId') || null
-    );
+    const [selectedDialogId, setSelectedDialogId] = useState(routeDialogId || null);
 
     useEffect(() => {
         if (authUser) {
             getDialogs();
         }
         const intervalId = setInterval(() => {
-            setSelectedDialogId(localStorage.getItem('selectedDialogId'))
             getDialogs();
 
         }, 2000);
         return () => clearInterval(intervalId);
     }, [authUser, getDialogs]);
 
+
     useEffect(() => {
-        if (selectedDialogId) {
-            setDialogUser(selectedDialogId);
+        if (routeDialogId) {
+            setSelectedDialogId(routeDialogId);
+            setDialogUser(routeDialogId);
+        } else {
+            setSelectedDialogId(null);
+            setDialogUser(null);
         }
-    }, [selectedDialogId, setDialogUser]);
+    }, [routeDialogId, setDialogUser]);
+
+    const handleDialogClick = (dialog) => {
+        setSelectedDialogId(dialog._id);
+        setDialogUser(dialog._id);
+        navigate(`/chat/${dialog._id}`);
+    };
 
 
 
@@ -46,12 +55,6 @@ export const PeopleList = () => {
         return <Typography>Loading...</Typography>;
     }
 
-    const handleDialogClick = (dialog) => {
-        setSelectedDialogId(dialog._id);
-        localStorage.setItem('selectedDialogId', dialog._id);
-        setDialogUser(dialog._id);
-        navigate(`/chat/${dialog._id}`);
-    };
 
 
     return (

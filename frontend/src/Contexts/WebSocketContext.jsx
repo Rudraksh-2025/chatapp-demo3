@@ -11,7 +11,7 @@ export const WebSocketProvider = ({ children, userId }) => {
 
     useEffect(() => {
         // Initialize Socket.IO client
-        const backendUrl = process.env.REACT_APP_BACKEND_URL;
+        const backendUrl = import.meta.env.REACT_APP_BACKEND_URL;
         const newSocket = io(backendUrl, {
             transports: ['websocket'], // Use WebSocket only
         });

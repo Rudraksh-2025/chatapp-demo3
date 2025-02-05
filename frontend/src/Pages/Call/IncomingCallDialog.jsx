@@ -61,7 +61,7 @@ const IncomingCallDialog = ({ currentUserId }) => {
 
         const handleCallEnded = ({ callId: endedCallId }) => {
             if (incomingCall && endedCallId === incomingCall.callId) {
-                alert("Call ended by the other user.");
+                alert("Call ended.");
                 handleCloseCall();
             }
         };
