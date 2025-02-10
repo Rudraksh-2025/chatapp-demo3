@@ -15,12 +15,16 @@ export const useUserStore = create((set, get) => ({
         set({ isFetching: true })
         try {
             const { userToken } = useAuthStore.getState()
+            const { authUser } = useAuthStore.getState()
             const response = await axios.get('https://api.quickblox.com/users.json?page=1&per_page=10', {
                 headers: {
                     'QB-Token': userToken
                 }
             })
-            set({ users: response.data.items, isFetching: false })
+            const userList = response.data.items
+            const users = userList.filter((user) => user.user.id !== authUser.session.user_id)
+
+            set({ users: users, isFetching: false })
         } catch (error) {
             toast.error("error in fetching users")
             console.log(error)

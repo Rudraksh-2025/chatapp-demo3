@@ -15,7 +15,6 @@ export const useAuthStore = create((set, get) => ({
     userToken: localStorage.getItem('userToken'),
 
     createSession: async () => {
-
         const applicationId = import.meta.env.VITE_QB_APP_ID;
         const authKey = import.meta.env.VITE_QB_AUTH_KEY;
         const authSecret = import.meta.env.VITE_QB_AUTH_SECRET;
